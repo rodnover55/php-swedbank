@@ -1,8 +1,13 @@
 {
-    "name": "root/php-swedbank",
+    "name": "rodnover55/php-swedbank",
+    "description": "Wrapper of Swedbank Payment Portal",
     "type": "library",
+    "keywords": ["swedbank", "payment"],
+    "homepage": "https://github.com/rodnover55/php-swedbank",
+    "license": "MIT",
     "require": {
-        "curl/curl": "^1.3"
+        "curl/curl": "^1.3",
+        "php": ">=5.5"
     },
     "autoload": {
         "psr-4": {
