@@ -1,5 +1,6 @@
 <?php
-namespace Rnr\Swedbank;
+namespace Rnr\Swedbank\Responses;
+use Rnr\Swedbank\Requests\Request;
 
 /**
  * @author Sergei Melnikov <me@rnr.name>

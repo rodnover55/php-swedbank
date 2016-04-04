@@ -1,6 +1,8 @@
 <?php
-namespace Rnr\Swedbank;
+namespace Rnr\Swedbank\Requests;
 
+use Rnr\Swedbank\Curl;
+use Rnr\Swedbank\Responses\Response;
 use SimpleXMLElement;
 
 /**

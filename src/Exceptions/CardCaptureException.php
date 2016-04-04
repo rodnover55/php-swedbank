@@ -5,7 +5,7 @@ use Exception;
 use Rnr\Swedbank\Enums\CardCaptureStatus;
 use Rnr\Swedbank\Exceptions\ResponseStatusFormatter\CommonFormatter;
 use Rnr\Swedbank\Exceptions\ResponseStatusFormatter\InvalidReferenceFormatter;
-use Rnr\Swedbank\Request;
+use Rnr\Swedbank\Requests\Request;
 use SimpleXMLElement;
 
 /**

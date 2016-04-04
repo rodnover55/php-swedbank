@@ -1,8 +1,10 @@
 <?php
-namespace Rnr\Swedbank;
+namespace Rnr\Swedbank\Responses;
 
 use Rnr\Swedbank\Enums\CardCaptureStatus;
 use Rnr\Swedbank\Exceptions\CardCaptureException;
+use Rnr\Swedbank\Requests\CardCaptureRequest;
+use Rnr\Swedbank\Responses\Response;
 use SimpleXMLElement;
 use DateTime;
 /**

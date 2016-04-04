@@ -1,8 +1,10 @@
 <?php
-namespace Rnr\Swedbank;
+namespace Rnr\Swedbank\Requests;
 
+use Rnr\Swedbank\Responses\CardCaptureResponse;
 use Rnr\Swedbank\Enums\PageSet;
 use Rnr\Swedbank\Exceptions\CardCaptureException;
+use Rnr\Swedbank\Requests\Request;
 use SimpleXMLElement;
 
 /**

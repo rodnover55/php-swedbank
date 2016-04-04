@@ -1,7 +1,7 @@
 <?php
 namespace Rnr\Swedbank\Exceptions\ResponseStatusFormatter;
 
-use Rnr\Swedbank\Request;
+use Rnr\Swedbank\Requests\Request;
 use SimpleXMLElement;
 
 class CommonFormatter

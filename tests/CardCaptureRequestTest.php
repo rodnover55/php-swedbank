@@ -1,8 +1,8 @@
 <?php
 namespace Rnr\Tests\Swedbank;
 
-use Rnr\Swedbank\CardCaptureRequest;
-use Rnr\Swedbank\CardCaptureResponse;
+use Rnr\Swedbank\Requests\CardCaptureRequest;
+use Rnr\Swedbank\Responses\CardCaptureResponse;
 use Rnr\Swedbank\Enums\CardCaptureStatus;
 use SimpleXMLElement;
 
