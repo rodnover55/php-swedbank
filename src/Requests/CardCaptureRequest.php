@@ -5,7 +5,7 @@ use Rnr\Swedbank\Enums\Currency;
 use Rnr\Swedbank\Responses\CardCaptureResponse;
 use Rnr\Swedbank\Enums\PageSet;
 use Rnr\Swedbank\Exceptions\CardCaptureException;
-use Rnr\Swedbank\Support\AmountElement;
+use Rnr\Swedbank\Support\Amount;
 use Rnr\Swedbank\Support\MerchantReference;
 use SimpleXMLElement;
 
@@ -18,7 +18,7 @@ class CardCaptureRequest extends Request
     /** @var MerchantReference */
     private $reference;
 
-    private $currency = Currency::EUR;
+    /** @var Amount */
     private $amount;
 
     private $returnUrl;
@@ -59,15 +59,13 @@ class CardCaptureRequest extends Request
     }
 
     protected function createDetails(SimpleXMLElement $xml) {
-        $amount = new AmountElement($this->amount, $this->currency);
-
-        $amount->check();
+        $this->amount->check();
         $this->reference->check();
 
         $details = $xml->addChild('TxnDetails');
 
         $details->addChild('merchantreference', $this->reference->getReference());
-        $amount->createElement($details);
+        $this->amount->createElement($details);
 
         return $details;
     }
@@ -76,24 +74,6 @@ class CardCaptureRequest extends Request
         if (empty($url)) {
             throw new CardCaptureException($message);
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrency()
-    {
-        return $this->currency;
-    }
-
-    /**
-     * @param string $currency
-     * @return CardCaptureRequest
-     */
-    public function setCurrency($currency)
-    {
-        $this->currency = $currency;
-        return $this;
     }
 
     /**
@@ -108,9 +88,10 @@ class CardCaptureRequest extends Request
      * @param mixed $amount
      * @return CardCaptureRequest
      */
-    public function setAmount($amount)
+    public function setAmount(Amount $amount)
     {
         $this->amount = $amount;
+        
         return $this;
     }
 

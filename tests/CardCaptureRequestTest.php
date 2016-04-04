@@ -4,6 +4,7 @@ namespace Rnr\Tests\Swedbank;
 use Rnr\Swedbank\Requests\CardCaptureRequest;
 use Rnr\Swedbank\Responses\CardCaptureResponse;
 use Rnr\Swedbank\Enums\CardCaptureStatus;
+use Rnr\Swedbank\Support\Amount;
 use Rnr\Swedbank\Support\MerchantReference;
 use SimpleXMLElement;
 
@@ -32,7 +33,7 @@ class CardCaptureRequestTest extends TestCase
         $request
             ->setReturnUrl('http://example.com/return')
             ->setExpiryUrl('http://example.com/expiry')
-            ->setAmount(150)
+            ->setAmount(new Amount(150))
             ->setReference(new MerchantReference($orderId));
         
         $response = $request->send();

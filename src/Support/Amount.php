@@ -9,7 +9,7 @@ use ReflectionClass;
 /**
  * @author Sergei Melnikov <me@rnr.name>
  */
-class AmountElement
+class Amount
 {
     private $amount;
     private $currency = Currency::EUR;
