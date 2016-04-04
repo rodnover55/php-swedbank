@@ -1,5 +1,5 @@
 <?php
-namespace Rnr\Swedbank;
+namespace Rnr\Swedbank\Enums;
 
 /**
  * @author Sergei Melnikov <me@rnr.name>
