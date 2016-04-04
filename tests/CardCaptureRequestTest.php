@@ -1,7 +1,10 @@
 <?php
 namespace Rnr\Tests\Swedbank;
+
 use Rnr\Swedbank\CardCaptureRequest;
+use Rnr\Swedbank\CardCaptureResponse;
 use Rnr\Swedbank\Enums\CardCaptureStatus;
+use SimpleXMLElement;
 
 /**
  * @author Sergei Melnikov <me@rnr.name>
@@ -39,5 +42,15 @@ class CardCaptureRequestTest extends TestCase
         $this->assertEquals("{$orderId}/1", $response->getOrderId());
         $this->assertEquals('ACCEPTED', $response->getReason());
         $this->assertEquals(CardCaptureStatus::SUCCESS, $response->getStatus());
+    }
+
+    public function testUrl() {
+        $xml = new SimpleXMLElement(file_get_contents(__DIR__ . '/card-capture-response.xml'));
+        
+        $response = new CardCaptureResponse(new CardCaptureRequest($this->url, $this->clientId, $this->password), $xml);
+
+        $route = $response->getRoute();
+        $sessionId = $response->getSessionId();
+        $this->assertEquals("{$route}?HPS_SessionID={$sessionId}", $response->getUrl());
     }
 }

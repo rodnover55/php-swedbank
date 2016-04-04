@@ -52,6 +52,9 @@ class CardCaptureResponse extends Response
         return $this->url;
     }
 
+    public function getUrl() {
+        return "{$this->url}?HPS_SessionID={$this->sessionId}";
+    }
     /**
      * @return string
      */
