@@ -1,5 +1,6 @@
 <?php
 namespace Rnr\Swedbank\Support;
+use Rnr\Swedbank\Exceptions\CardCaptureException;
 
 /**
  * @author Sergei Melnikov <me@rnr.name>
@@ -22,6 +23,12 @@ class MerchantReference
     
     public function getReference() {
         return "{$this->orderId}/{$this->attempt}";
+    }
+    
+    public function check() {
+        if (empty($this->orderId)) {
+            throw new CardCaptureException("Value of order '{$this->orderId}' has not valid");
+        }
     }
 
     /**

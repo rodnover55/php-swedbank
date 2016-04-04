@@ -1,9 +1,11 @@
 <?php
 namespace Rnr\Swedbank\Requests;
 
+use Rnr\Swedbank\Enums\Currency;
 use Rnr\Swedbank\Responses\CardCaptureResponse;
 use Rnr\Swedbank\Enums\PageSet;
 use Rnr\Swedbank\Exceptions\CardCaptureException;
+use Rnr\Swedbank\Support\AmountElement;
 use Rnr\Swedbank\Support\MerchantReference;
 use SimpleXMLElement;
 
@@ -13,12 +15,10 @@ use SimpleXMLElement;
  */
 class CardCaptureRequest extends Request
 {
-    const EUR = 'EUR';
-
     /** @var MerchantReference */
     private $reference;
 
-    private $currency = self::EUR;
+    private $currency = Currency::EUR;
     private $amount;
 
     private $returnUrl;
@@ -59,33 +59,17 @@ class CardCaptureRequest extends Request
     }
 
     protected function createDetails(SimpleXMLElement $xml) {
-        $this->checkAmount($this->amount);
-        $this->checkOrderId($this->reference->getOrderId());
+        $amount = new AmountElement($this->amount, $this->currency);
+
+        $amount->check();
+        $this->reference->check();
 
         $details = $xml->addChild('TxnDetails');
 
         $details->addChild('merchantreference', $this->reference->getReference());
-
-
-        $amount = $details->addChild('amount', $this->amount);
-        $amount->addAttribute('currency', $this->currency);
-
+        $amount->createElement($details);
 
         return $details;
-    }
-
-    protected function checkAmount($amount) {
-        if (empty($amount)) {
-            throw new CardCaptureException("Value of amount '{$this->amount}' has not valid");
-        }
-    }
-
-    protected function checkOrderId($amount) {
-        $orderId = $this->reference->getOrderId();
-
-        if (empty($orderId)) {
-            throw new CardCaptureException("Value of order '{$orderId}' has not valid");
-        }
     }
 
     protected function checkUrl($url, $message = 'Url has not valid format') {
