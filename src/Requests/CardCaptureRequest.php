@@ -4,7 +4,7 @@ namespace Rnr\Swedbank\Requests;
 use Rnr\Swedbank\Responses\CardCaptureResponse;
 use Rnr\Swedbank\Enums\PageSet;
 use Rnr\Swedbank\Exceptions\CardCaptureException;
-use Rnr\Swedbank\Requests\Request;
+use Rnr\Swedbank\Support\MerchantReference;
 use SimpleXMLElement;
 
 /**
@@ -15,8 +15,9 @@ class CardCaptureRequest extends Request
 {
     const EUR = 'EUR';
 
-    private $orderId;
-    private $attempt = 1;
+    /** @var MerchantReference */
+    private $reference;
+
     private $currency = self::EUR;
     private $amount;
 
@@ -59,11 +60,11 @@ class CardCaptureRequest extends Request
 
     protected function createDetails(SimpleXMLElement $xml) {
         $this->checkAmount($this->amount);
-        $this->checkOrderId($this->orderId);
+        $this->checkOrderId($this->reference->getOrderId());
 
         $details = $xml->addChild('TxnDetails');
 
-        $details->addChild('merchantreference', "{$this->orderId}/{$this->attempt}");
+        $details->addChild('merchantreference', $this->reference->getReference());
 
 
         $amount = $details->addChild('amount', $this->amount);
@@ -80,8 +81,10 @@ class CardCaptureRequest extends Request
     }
 
     protected function checkOrderId($amount) {
-        if (empty($amount)) {
-            throw new CardCaptureException("Value of order '{$this->orderId}' has not valid");
+        $orderId = $this->reference->getOrderId();
+
+        if (empty($orderId)) {
+            throw new CardCaptureException("Value of order '{$orderId}' has not valid");
         }
     }
 
@@ -89,42 +92,6 @@ class CardCaptureRequest extends Request
         if (empty($url)) {
             throw new CardCaptureException($message);
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getOrderId()
-    {
-        return $this->orderId;
-    }
-
-    /**
-     * @param mixed $orderId
-     * @return CardCaptureRequest
-     */
-    public function setOrderId($orderId)
-    {
-        $this->orderId = $orderId;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getAttempt()
-    {
-        return $this->attempt;
-    }
-
-    /**
-     * @param int $attempt
-     * @return CardCaptureRequest
-     */
-    public function setAttempt($attempt)
-    {
-        $this->attempt = $attempt;
-        return $this;
     }
 
     /**
@@ -250,6 +217,24 @@ class CardCaptureRequest extends Request
     public function setPageSetId($pageSetId)
     {
         $this->pageSetId = $pageSetId;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReference()
+    {
+        return $this->reference;
+    }
+
+    /**
+     * @param mixed $reference
+     * @return CardCaptureRequest
+     */
+    public function setReference(MerchantReference $reference)
+    {
+        $this->reference = $reference;
         return $this;
     }
 }
