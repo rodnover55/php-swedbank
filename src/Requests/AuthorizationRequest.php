@@ -148,7 +148,7 @@ class AuthorizationRequest extends Request
 
     protected function createResponse(SimpleXMLElement $response)
     {
-        return AuthorizationResponse::createFromXml($response, $this);
+        return new AuthorizationResponse($response, $this);
     }
 
     /**
