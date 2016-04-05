@@ -17,8 +17,8 @@ class CommonFormatter
     public function __toString()
     {
         $reason = (string)$this->xml->reason;
-        $log = (empty($request)) ? '' : "\n{{$this->request->getLastBody()->asXML()}}";
-        
+        $log = (empty($this->request)) ? '' : "\n{$this->request->getLastBody()->asXML()}";
+
         return "{$reason}{$log}";
     }
 }

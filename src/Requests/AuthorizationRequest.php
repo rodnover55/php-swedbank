@@ -4,6 +4,8 @@ namespace Rnr\Swedbank\Requests;
 use Rnr\Swedbank\Enums\CaptureMethod;
 use Rnr\Swedbank\Enums\Channel;
 use Rnr\Swedbank\Enums\PaymentMethod;
+use Rnr\Swedbank\Exceptions\ValidationException;
+use Rnr\Swedbank\Responses\AuthorizationResponse;
 use Rnr\Swedbank\Support\Amount;
 use Rnr\Swedbank\Support\Contact;
 use Rnr\Swedbank\Support\Details;
@@ -24,6 +26,8 @@ class AuthorizationRequest extends Request
     /** @var MerchantReference */
     private $reference;
 
+    private $transaction;
+
     /** @var Amount */
     private $amount;
 
@@ -42,8 +46,23 @@ class AuthorizationRequest extends Request
 
     protected function fillTransaction(SimpleXMLElement $xml)
     {
+        $this->check();
         $this->createDetails($xml);
         $this->createCard($xml);
+    }
+
+    protected function check() {
+        if (empty($this->reference)) {
+            throw new ValidationException('Reference is empty');
+        }
+
+        if (empty($this->amount)) {
+            throw new ValidationException('Amount is empty');
+        }
+        
+        if (empty($this->merchantUrl)) {
+            throw new ValidationException('Merchant url is empty');
+        }
     }
 
     protected function createDetails(SimpleXMLElement $xml) {
@@ -64,7 +83,7 @@ class AuthorizationRequest extends Request
     }
 
     protected function createRisk(SimpleXMLElement $xml) {
-        $action = $xml->addChild('Action');
+        $action = $xml->addChild('Risk')->addChild('Action');
         // TODO: Pre/post-authorization would be moved to enums
         $action->addAttribute('service', 1);
 
@@ -121,7 +140,7 @@ class AuthorizationRequest extends Request
         $card = $xml->addChild('CardTxn');
 
         $card->addChild('method', self::METHOD_AUTH);
-        $detail = $card->addChild('card_details', $this->reference);
+        $detail = $card->addChild('card_details', $this->transaction);
         $detail->addAttribute('type', 'from_hps');
 
         return $card;
@@ -129,7 +148,7 @@ class AuthorizationRequest extends Request
 
     protected function createResponse(SimpleXMLElement $response)
     {
-        throw new \Exception("Method createResponse isn't implemented.");
+        return AuthorizationResponse::createFromXml($response, $this);
     }
 
     /**
@@ -255,6 +274,24 @@ class AuthorizationRequest extends Request
     public function setDescription($description)
     {
         $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTransaction()
+    {
+        return $this->transaction;
+    }
+
+    /**
+     * @param mixed $transaction
+     * @return AuthorizationRequest
+     */
+    public function setTransaction($transaction)
+    {
+        $this->transaction = $transaction;
         return $this;
     }
 }

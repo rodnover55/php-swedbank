@@ -23,7 +23,7 @@ class Contact
 
     /**
      * @param mixed $title
-     * @return Location
+     * @return $this
      */
     public function setTitle($title)
     {
@@ -41,7 +41,7 @@ class Contact
 
     /**
      * @param mixed $firstName
-     * @return Location
+     * @return $this
      */
     public function setFirstName($firstName)
     {
@@ -59,7 +59,7 @@ class Contact
 
     /**
      * @param mixed $surname
-     * @return Location
+     * @return $this
      */
     public function setSurname($surname)
     {

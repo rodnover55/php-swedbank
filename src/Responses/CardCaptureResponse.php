@@ -1,10 +1,12 @@
 <?php
 namespace Rnr\Swedbank\Responses;
 
-use Rnr\Swedbank\Enums\CardCaptureStatus;
+use Rnr\Swedbank\Enums\Status;
 use Rnr\Swedbank\Exceptions\CardCaptureException;
+use Rnr\Swedbank\Exceptions\ResponseStatusFormatter\InformationFormatter;
 use Rnr\Swedbank\Requests\CardCaptureRequest;
 use Rnr\Swedbank\Responses\Response;
+use Rnr\Swedbank\Support\MerchantReference;
 use SimpleXMLElement;
 use DateTime;
 /**
@@ -15,35 +17,24 @@ class CardCaptureResponse extends Response
     private $url;
     private $sessionId;
     private $transaction;
-    private $orderId;
+    private $reference;
     private $mode;
     private $reason;
     private $status;
-    private $dateTime;
+    private $responseTime;
 
     public function __construct(CardCaptureRequest $request, SimpleXMLElement $xml)
     {
-        parent::__construct($request);
-
-
-        $this->validate($xml);
+        parent::__construct($xml, $request);
 
         $this->url = (string)$xml->HpsTxn->hps_url;
         $this->sessionId = (string)$xml->HpsTxn->session_id;
         $this->transaction = (string)$xml->datacash_reference;
-        $this->orderId = (string)$xml->merchantreference;
+        $this->reference = MerchantReference::createFromString((string)$xml->merchantreference);
         $this->mode = (string)$xml->mode;
         $this->status = (int)$xml->status;
         $this->reason = (string)$xml->reason;
-        $this->dateTime = new DateTime("@{$xml->time}");
-    }
-
-    protected function validate(SimpleXMLElement $xml) {
-        $e = CardCaptureException::createFromXml($xml, $this->getRequest());
-        
-        if (!empty($e)) {
-            throw $e;
-        }
+        $this->responseTime = new DateTime("@{$xml->time}");
     }
 
     /**
@@ -74,11 +65,11 @@ class CardCaptureResponse extends Response
     }
 
     /**
-     * @return string
+     * @return MerchantReference
      */
-    public function getOrderId()
+    public function getReference()
     {
-        return $this->orderId;
+        return $this->reference;
     }
 
     /**
@@ -108,8 +99,22 @@ class CardCaptureResponse extends Response
     /**
      * @return DateTime
      */
-    public function getDateTime()
+    public function getResponseTime()
     {
-        return $this->dateTime;
+        return $this->responseTime;
+    }
+
+    protected function createException($message, $status)
+    {
+        return new CardCaptureException($message, $status);
+    }
+
+    protected function getFormatters()
+    {
+        $formatters = parent::getFormatters();
+
+        return $formatters + [
+            Status::INVALID_REFERENCE => InformationFormatter::class
+        ];
     }
 }

@@ -6,7 +6,7 @@ use PHPUnit_Framework_TestCase as BaseTestCase;
 /**
  * @author Sergei Melnikov <me@rnr.name>
  */
-class TestCase extends BaseTestCase
+abstract class TestCase extends BaseTestCase
 {
     protected function setUp()
     {

@@ -1,6 +1,8 @@
 <?php
 namespace Rnr\Swedbank\Support;
+
 use Rnr\Swedbank\Exceptions\CardCaptureException;
+use Rnr\Swedbank\Exceptions\ValidationException;
 
 /**
  * @author Sergei Melnikov <me@rnr.name>
@@ -19,6 +21,16 @@ class MerchantReference
     {
         $this->orderId = $orderId;
         $this->attempt = $attempt;
+    }
+
+    public static function createFromString($reference) {
+        $matches = [];
+        
+        if (!preg_match('#^(.+)/(.+)$#', $reference, $matches)) {
+            throw new ValidationException('Wrong reference format');
+        }
+        
+        return new MerchantReference($matches[1], $matches[2]);
     }
     
     public function getReference() {

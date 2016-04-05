@@ -1,6 +1,7 @@
 <?php
 namespace Rnr\Swedbank\Support\Populators;
 
+use Rnr\Swedbank\Exceptions\ValidationException;
 use Rnr\Swedbank\Support\Contact;
 use SimpleXMLElement;
 
@@ -11,6 +12,15 @@ class PersonDetailsPopulator
 {
     /** @var Contact */
     private $contact;
+
+    /**
+     * PersonDetailsPopulator constructor.
+     * @param Contact $contact
+     */
+    public function __construct(Contact $contact)
+    {
+        $this->contact = $contact;
+    }
 
     public function createElement(SimpleXMLElement $xml) {
         $xml->addChild('first_name', $this->contact->getFirstName());
