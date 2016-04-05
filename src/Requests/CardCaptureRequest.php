@@ -1,7 +1,6 @@
 <?php
 namespace Rnr\Swedbank\Requests;
 
-use Rnr\Swedbank\Enums\Currency;
 use Rnr\Swedbank\Responses\CardCaptureResponse;
 use Rnr\Swedbank\Enums\PageSet;
 use Rnr\Swedbank\Exceptions\CardCaptureException;
@@ -10,7 +9,6 @@ use Rnr\Swedbank\Support\MerchantReference;
 use SimpleXMLElement;
 
 /**
- * @author Sergei Melnikov <me@rnr.name>
  * @method CardCaptureResponse send()
  */
 class CardCaptureRequest extends Request

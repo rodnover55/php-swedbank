@@ -2,9 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>title</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+    <title>index</title>
   </head>
   <body>
     <form action="/card-capture.php" method="post">

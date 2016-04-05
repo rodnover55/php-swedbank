@@ -6,9 +6,7 @@ session_start(); ?>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>title</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+    <title>authorization</title>
 </head>
 <body>
 <form action="/authorization-post.php" method="post">

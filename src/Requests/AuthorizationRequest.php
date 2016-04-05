@@ -17,7 +17,7 @@ use Rnr\Swedbank\Support\Populators\ShippingDetailsPopulator;
 use SimpleXMLElement;
 
 /**
- * @author Sergei Melnikov <me@rnr.name>
+ * @method AuthorizationResponse send()
  */
 class AuthorizationRequest extends Request
 {

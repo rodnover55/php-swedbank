@@ -140,4 +140,28 @@ class AuthorizationResponse extends Response
     {
         return $this->token;
     }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPareqMessage()
+    {
+        return $this->pareqMessage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 }
