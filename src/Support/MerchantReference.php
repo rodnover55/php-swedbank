@@ -38,9 +38,6 @@ class MerchantReference
     }
     
     public function check() {
-        if (empty($this->orderId)) {
-            throw new CardCaptureException("Value of order '{$this->orderId}' has not valid");
-        }
     }
 
     /**

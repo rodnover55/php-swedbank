@@ -1,19 +1,13 @@
 <?php
 namespace Rnr\Swedbank\Requests;
 
-use Rnr\Swedbank\Enums\CaptureMethod;
-use Rnr\Swedbank\Enums\Channel;
-use Rnr\Swedbank\Enums\PaymentMethod;
-use Rnr\Swedbank\Exceptions\ValidationException;
 use Rnr\Swedbank\Responses\AuthorizationResponse;
 use Rnr\Swedbank\Support\Amount;
 use Rnr\Swedbank\Support\Contact;
 use Rnr\Swedbank\Support\Details;
 use Rnr\Swedbank\Support\MerchantReference;
-use Rnr\Swedbank\Support\Populators\BillingDetailsPopulator;
-use Rnr\Swedbank\Support\Populators\PersonDetailsPopulator;
-use Rnr\Swedbank\Support\Populators\RiskDetailsPopulator;
-use Rnr\Swedbank\Support\Populators\ShippingDetailsPopulator;
+use Rnr\Swedbank\Populators\CardTxnPopulator;
+use Rnr\Swedbank\Populators\TxnFullDetailsPopulator;
 use SimpleXMLElement;
 
 /**
@@ -21,8 +15,6 @@ use SimpleXMLElement;
  */
 class AuthorizationRequest extends Request
 {
-    const METHOD_AUTH = 'auth';
-
     /** @var MerchantReference */
     private $reference;
 
@@ -46,104 +38,22 @@ class AuthorizationRequest extends Request
 
     protected function fillTransaction(SimpleXMLElement $xml)
     {
-        $this->check();
-        $this->createDetails($xml);
-        $this->createCard($xml);
-    }
+        $detailsPopulator = new TxnFullDetailsPopulator();
 
-    protected function check() {
-        if (empty($this->reference)) {
-            throw new ValidationException('Reference is empty');
-        }
-
-        if (empty($this->amount)) {
-            throw new ValidationException('Amount is empty');
-        }
+        $detailsPopulator
+            ->setReference($this->reference)
+            ->setAmount($this->amount)
+            ->setBillingDetails($this->billingDetails)
+            ->setContact($this->personalDetail)
+            ->setMerchantUrl($this->merchantUrl)
+            ->setDescription($this->description);
         
-        if (empty($this->merchantUrl)) {
-            throw new ValidationException('Merchant url is empty');
-        }
-    }
+        $cardPopulator = new CardTxnPopulator();
 
-    protected function createDetails(SimpleXMLElement $xml) {
-        $this->reference->check();
-        $this->amount->check();
+        $cardPopulator->setTransaction($this->transaction);
 
-        $details = $xml->addChild('TxnDetails');
-
-        $details->addChild('merchantreference', $this->reference->getReference());
-        $details->addChild('capturemethod', CaptureMethod::ECOMM);
-
-        $this->amount->createElement($details);
-
-        $this->createRisk($details);
-        $this->createThreeDSecure($details);
-
-        return $details;
-    }
-
-    protected function createRisk(SimpleXMLElement $xml) {
-        $action = $xml->addChild('Risk')->addChild('Action');
-        // TODO: Pre/post-authorization would be moved to enums
-        $action->addAttribute('service', 1);
-
-        $action->addChild('MerchantConfiguration')->addChild('channel', Channel::WEB);
-        
-        $details = $action->addChild('CustomerDetails');
-
-        $orderDetails = $details->addChild('OrderDetails');
-        $this->createBillingDetails($orderDetails);
-        
-        (new PersonDetailsPopulator($this->personalDetail))
-            ->createElement($details->addChild('PersonalDetails'));
-        
-        $this->createShippingDetails($details);
-        $details->addChild('PaymentDetails')->addChild('payment_method', PaymentMethod::BANK_CARD);
-        $this->createRiskDetails($details);
-    }
-
-    protected function createBillingDetails(SimpleXMLElement $xml) {
-        if (!empty($this->billingDetails)) {
-            $populator = new BillingDetailsPopulator($this->billingDetails);
-            $populator->check();
-            $populator->createElement($xml->addChild('BillingDetails'));
-        }
-    }
-
-    protected function createShippingDetails(SimpleXMLElement $xml) {
-        if (!empty($this->shippingDetails)) {
-            $populator = new ShippingDetailsPopulator($this->shippingDetails);
-            $populator->check();
-            $populator->createElement($xml->addChild('ShippingDetails'));
-        }
-    }
-
-    protected function createRiskDetails(SimpleXMLElement $xml) {
-        $populator = new RiskDetailsPopulator($this->personalDetail);
-        $populator->check();
-        $populator->createElement($xml->addChild('RiskDetails'));
-    }
-
-    protected function createThreeDSecure(SimpleXMLElement $xml) {
-        $secure = $xml->addChild('ThreeDSecure');
-        $secure->addChild('purchase_datetime', date('Ymd h:i:s'));
-        // TODO: Discover possible values and system's behavior
-        $secure->addChild('verify', 'yes');
-        // TODO: Discover possible values
-        $secure->addChild('Browser')->addChild('device_category', 0);
-        $secure->addChild('merchant_url', $this->merchantUrl);
-        $secure->addChild('purchase_desc', $this->description);
-
-    }
-
-    protected function createCard(SimpleXMLElement $xml) {
-        $card = $xml->addChild('CardTxn');
-
-        $card->addChild('method', self::METHOD_AUTH);
-        $detail = $card->addChild('card_details', $this->transaction);
-        $detail->addAttribute('type', 'from_hps');
-
-        return $card;
+        $detailsPopulator->createElement($xml->addChild('TxnDetails'));
+        $cardPopulator->createElement($xml->addChild('CardTxn'));
     }
 
     protected function createResponse(SimpleXMLElement $response)

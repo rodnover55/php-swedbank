@@ -1,6 +1,8 @@
 <?php
 namespace Rnr\Swedbank\Requests;
 
+use Rnr\Swedbank\Populators\HpsTxnPopulator;
+use Rnr\Swedbank\Populators\TxnDetailsPopulator;
 use Rnr\Swedbank\Responses\CardCaptureResponse;
 use Rnr\Swedbank\Enums\PageSet;
 use Rnr\Swedbank\Exceptions\CardCaptureException;
@@ -32,46 +34,21 @@ class CardCaptureRequest extends Request
 
     protected function fillTransaction(SimpleXMLElement $xml)
     {
-        $this->createHps($xml);
-        $this->createDetails($xml);
-    }
+        $hpsPopulator = new HpsTxnPopulator();
 
-    protected function createHps(SimpleXMLElement $xml) {
-        $this->checkUrl($this->returnUrl, "ReturnUrl '{$this->returnUrl}' hasn't valid format.");
-        $this->checkUrl($this->expiryUrl, "ExpiryUrl '{$this->expiryUrl}' hasn't valid format.");
+        $hpsPopulator
+            ->setReturnUrl($this->returnUrl)
+            ->setExpiryUrl($this->expiryUrl)
+            ->setPageSetId($this->pageSetId);
+        
+        $detailsPopulator = new TxnDetailsPopulator();
 
-        $hps = $xml->addChild('HpsTxn');
+        $detailsPopulator
+            ->setReference($this->reference)
+            ->setAmount($this->amount);
 
-        $hps->addChild('method', 'setup');
-
-        $hps->addChild('return_url', $this->returnUrl);
-        $hps->addChild('expiry_url', $this->expiryUrl);
-        $hps->addChild('page_set_id', $this->pageSetId);
-
-        $dynamicData = $hps->addChild('DynamicData');
-        $dynamicData->addChild('dyn_data_3', $this->visibilityOfCardholderName ? 'show' : '');
-        $dynamicData->addChild('dyn_data_4', $this->goBackUrl);
-
-        return $hps;
-
-    }
-
-    protected function createDetails(SimpleXMLElement $xml) {
-        $this->amount->check();
-        $this->reference->check();
-
-        $details = $xml->addChild('TxnDetails');
-
-        $details->addChild('merchantreference', $this->reference->getReference());
-        $this->amount->createElement($details);
-
-        return $details;
-    }
-
-    protected function checkUrl($url, $message = 'Url has not valid format') {
-        if (empty($url)) {
-            throw new CardCaptureException($message);
-        }
+        $hpsPopulator->createElement($xml->addChild('HpsTxn'));
+        $detailsPopulator->createElement($xml->addChild('TxnDetails'));
     }
 
     /**

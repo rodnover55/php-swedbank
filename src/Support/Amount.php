@@ -11,7 +11,7 @@ use ReflectionClass;
  */
 class Amount
 {
-    private $amount;
+    private $value;
     private $currency = Currency::EUR;
 
     /**
@@ -21,26 +21,44 @@ class Amount
      */
     public function __construct($amount, $currency = Currency::EUR)
     {
-        $this->amount = $amount;
+        $this->value = $amount;
         $this->currency = $currency;
     }
 
-    public function createElement(SimpleXMLElement $xml) {
-        $amount = $xml->addChild('amount', $this->amount);
-        $amount->addAttribute('currency', $this->currency);
-        
-        return $amount;
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
     }
 
-    public function check() {
-        $supportedCurrencies = (new ReflectionClass(Currency::class))->getConstants();
-
-        if (!in_array($this->currency, array_values($supportedCurrencies))) {
-            throw new ValidationException("Currency '{$this->currency}' isn't supported");
-        }
-
-        if (empty($this->amount)) {
-            throw new ValidationException("Value of amount '{$this->amount}' has not valid");
-        }
+    /**
+     * @param mixed $value
+     * @return Amount
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+        return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     * @return Amount
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+        return $this;
+    }
+
 }

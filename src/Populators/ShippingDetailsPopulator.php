@@ -1,5 +1,6 @@
 <?php
-namespace Rnr\Swedbank\Support\Populators;
+namespace Rnr\Swedbank\Populators;
+
 use SimpleXMLElement;
 
 /**
@@ -7,7 +8,7 @@ use SimpleXMLElement;
  */
 class ShippingDetailsPopulator extends DetailsPopulator
 {
-    public function createElement(SimpleXMLElement $xml)
+    public function innerCreateElement(SimpleXMLElement $xml)
     {
         $person = $this->details->getPerson();
         $location = $this->details->getLocation();

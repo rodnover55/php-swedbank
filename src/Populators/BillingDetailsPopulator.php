@@ -1,10 +1,6 @@
 <?php
-namespace Rnr\Swedbank\Support\Populators;
+namespace Rnr\Swedbank\Populators;
 
-use Rnr\Swedbank\Config;
-use Rnr\Swedbank\Exceptions\ValidationException;
-use Rnr\Swedbank\Support\Details;
-use Rnr\Swedbank\Support\StringTool;
 use SimpleXMLElement;
 
 /**
@@ -12,7 +8,7 @@ use SimpleXMLElement;
  */
 class BillingDetailsPopulator extends DetailsPopulator
 {
-    public function createElement(SimpleXMLElement $xml) {
+    public function innerCreateElement(SimpleXMLElement $xml) {
         $xml->addChild('state_province', $this->details->getLocation()->getProvince());
         $xml->addChild('name', $this->details->getPerson()->getFullName());
 

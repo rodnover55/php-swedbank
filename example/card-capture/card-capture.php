@@ -5,7 +5,7 @@ use Rnr\Swedbank\Enums\TestPageSet;
 use Rnr\Swedbank\Support\MerchantReference;
 use Rnr\Swedbank\Support\Amount;
 
-require 'bootstrap.php';
+require '../bootstrap.php';
 
 $request = new CardCaptureRequest(
     getenv('URL'),

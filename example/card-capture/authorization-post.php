@@ -5,7 +5,7 @@ use Rnr\Swedbank\Support\Contact;
 use Rnr\Swedbank\Support\MerchantReference;
 use Rnr\Swedbank\Support\Amount;
 
-require 'bootstrap.php';
+require '../bootstrap.php';
 
 session_id($_REQUEST['dts_reference']);
 session_start();
