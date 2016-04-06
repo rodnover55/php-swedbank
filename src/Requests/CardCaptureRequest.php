@@ -5,7 +5,6 @@ use Rnr\Swedbank\Populators\HpsTxnPopulator;
 use Rnr\Swedbank\Populators\TxnDetailsPopulator;
 use Rnr\Swedbank\Responses\CardCaptureResponse;
 use Rnr\Swedbank\Enums\PageSet;
-use Rnr\Swedbank\Exceptions\CardCaptureException;
 use Rnr\Swedbank\Support\Amount;
 use Rnr\Swedbank\Support\MerchantReference;
 use SimpleXMLElement;
@@ -29,7 +28,7 @@ class CardCaptureRequest extends Request
 
     protected function createResponse(SimpleXMLElement $response)
     {
-        return new CardCaptureResponse($this, $response);
+        return new CardCaptureResponse($response, $this);
     }
 
     protected function fillTransaction(SimpleXMLElement $xml)
@@ -61,7 +60,7 @@ class CardCaptureRequest extends Request
 
     /**
      * @param mixed $amount
-     * @return CardCaptureRequest
+     * @return $this
      */
     public function setAmount(Amount $amount)
     {
@@ -80,7 +79,7 @@ class CardCaptureRequest extends Request
 
     /**
      * @param mixed $returnUrl
-     * @return CardCaptureRequest
+     * @return $this
      */
     public function setReturnUrl($returnUrl)
     {
@@ -98,7 +97,7 @@ class CardCaptureRequest extends Request
 
     /**
      * @param mixed $expiryUrl
-     * @return CardCaptureRequest
+     * @return $this
      */
     public function setExpiryUrl($expiryUrl)
     {
@@ -116,7 +115,7 @@ class CardCaptureRequest extends Request
 
     /**
      * @param mixed $goBackUrl
-     * @return CardCaptureRequest
+     * @return $this
      */
     public function setGoBackUrl($goBackUrl)
     {
@@ -134,7 +133,7 @@ class CardCaptureRequest extends Request
 
     /**
      * @param boolean $visibilityOfCardholderName
-     * @return CardCaptureRequest
+     * @return $this
      */
     public function setVisibilityOfCardholderName($visibilityOfCardholderName)
     {
@@ -152,7 +151,7 @@ class CardCaptureRequest extends Request
 
     /**
      * @param int $pageSetId
-     * @return CardCaptureRequest
+     * @return $this
      */
     public function setPageSetId($pageSetId)
     {
@@ -170,7 +169,7 @@ class CardCaptureRequest extends Request
 
     /**
      * @param mixed $reference
-     * @return CardCaptureRequest
+     * @return $this
      */
     public function setReference(MerchantReference $reference)
     {

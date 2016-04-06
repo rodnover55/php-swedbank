@@ -33,7 +33,6 @@ class AuthorizationRequest extends Request
     private $personalDetail;
 
     private $merchantUrl;
-
     private $description;
 
     protected function fillTransaction(SimpleXMLElement $xml)

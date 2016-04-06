@@ -2,7 +2,10 @@
 namespace Rnr\Swedbank\Populators;
 
 
+use Rnr\Swedbank\Enums\CaptureMethod;
+use Rnr\Swedbank\Exceptions\ValidationException;
 use Rnr\Swedbank\Support\Amount;
+use Rnr\Swedbank\Support\EnumTool;
 use Rnr\Swedbank\Support\MerchantReference;
 use SimpleXMLElement;
 
@@ -12,6 +15,8 @@ class TxnDetailsPopulator extends AbstractPopulator
     private $amountPopulator;
     /** @var MerchantReferencePopulator */
     private $referencePopulator;
+
+    private $captureMethod;
 
     /**
      * TxnDetailsPopulator constructor.
@@ -26,6 +31,21 @@ class TxnDetailsPopulator extends AbstractPopulator
     {
         $this->referencePopulator->createElement($xml);
         $this->amountPopulator->createElement($xml);
+
+        if (!empty($this->captureMethod)) {
+            $xml->addChild('capturemethod', $this->captureMethod);
+        }
+    }
+
+    public function check()
+    {
+        parent::check();
+
+        $methods = EnumTool::getConstants(CaptureMethod::class);
+
+        if (!empty($this->captureMethod) && !in_array($this->captureMethod, array_values($methods))) {
+            throw new ValidationException("Capture method '{$this->captureMethod}' has invalid value.");
+        }
     }
 
     /**
@@ -63,6 +83,25 @@ class TxnDetailsPopulator extends AbstractPopulator
     {
         $this->amountPopulator->setAmount($amount);
 
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCaptureMethod()
+    {
+        return $this->captureMethod;
+    }
+
+    /**
+     * @param mixed $captureMethod
+     * @return $this
+     */
+    public function setCaptureMethod($captureMethod)
+    {
+        $this->captureMethod = $captureMethod;
+        
         return $this;
     }
 }

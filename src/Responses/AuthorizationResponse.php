@@ -15,12 +15,9 @@ use SimpleXMLElement;
  */
 class AuthorizationResponse extends Response
 {
-    /** @var MerchantReference  */
-    private $reference;
     private $country;
     private $cardScheme;
     private $merchantId;
-    private $responseTime;
     private $information;
     private $acquirer;
     private $transaction;
@@ -28,7 +25,6 @@ class AuthorizationResponse extends Response
     
     private $url;
     private $pareqMessage;
-    private $status;
 
     public function __construct(SimpleXMLElement $xml, Request $request)
     {
@@ -42,10 +38,7 @@ class AuthorizationResponse extends Response
         $this->acquirer = (string)$xml->acquirer;
         $this->transaction = (string)$xml->datacash_reference;
         $this->information = (string)$xml->information;
-        $this->reference = MerchantReference::createFromString((string)$xml->merchantreference);
         $this->merchantId = (string)$xml->mid;
-        $this->responseTime = new DateTime("@{$xml->time}");
-        $this->status = (int)$xml->status;
         
         if (isset($cardTxn->ThreeDSecure)) {
             $this->url = (string)$cardTxn->ThreeDSecure->acs_url;
@@ -70,14 +63,6 @@ class AuthorizationResponse extends Response
     }
 
     /**
-     * @return MerchantReference
-     */
-    public function getReference()
-    {
-        return $this->reference;
-    }
-
-    /**
      * @return string
      */
     public function getCountry()
@@ -99,14 +84,6 @@ class AuthorizationResponse extends Response
     public function getMerchantId()
     {
         return $this->merchantId;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function getResponseTime()
-    {
-        return $this->responseTime;
     }
 
     /**
@@ -155,13 +132,5 @@ class AuthorizationResponse extends Response
     public function getPareqMessage()
     {
         return $this->pareqMessage;
-    }
-
-    /**
-     * @return int
-     */
-    public function getStatus()
-    {
-        return $this->status;
     }
 }

@@ -6,23 +6,17 @@ use Rnr\Swedbank\Support\Contact;
 use Rnr\Swedbank\Support\Details;
 use SimpleXMLElement;
 
-/**
- * @author Sergei Melnikov <me@rnr.name>
- */
-class TxnFullDetailsPopulator extends TxnDetailsPopulator
+class TxnFullDetailsPopulator extends TxnDetailsWithoutRiskPopulator
 {
+
     /** @var RiskPopulator */
     private $riskPopulator;
-    
-    /** @var ThreeDSecurePopulator  */
-    private $threeDPopulator;
 
     public function __construct()
     {
         parent::__construct();
-        
+
         $this->riskPopulator = new RiskPopulator();
-        $this->threeDPopulator = new ThreeDSecurePopulator();
     }
 
 
@@ -33,7 +27,6 @@ class TxnFullDetailsPopulator extends TxnDetailsPopulator
         $xml->addChild('capturemethod', CaptureMethod::ECOMM);
 
         $this->riskPopulator->createElement($xml->addChild('Risk'));
-        $this->threeDPopulator->createElement($xml->addChild('ThreeDSecure'));
     }
 
     /**
@@ -46,7 +39,7 @@ class TxnFullDetailsPopulator extends TxnDetailsPopulator
 
     /**
      * @param Details $details
-     * @return $this
+     * @return TxnFullDetailsPopulator
      */
     public function setBillingDetails($details = null)
     {
@@ -57,56 +50,20 @@ class TxnFullDetailsPopulator extends TxnDetailsPopulator
 
     /**
      * @param Contact $contact
-     * @return $this
+     * @return TxnFullDetailsPopulator
      */
-    public function setContact(Contact $contact) {
+    public function setContact(Contact $contact)
+    {
         $this->riskPopulator->setContact($contact);
-        
+
         return $this;
     }
 
     /**
      * @return Contact
      */
-    public function getContact() {
+    public function getContact()
+    {
         return $this->riskPopulator->getContact();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMerchantUrl()
-    {
-        return $this->threeDPopulator->getMerchantUrl();
-    }
-
-    /**
-     * @param mixed $merchantUrl
-     * @return $this
-     */
-    public function setMerchantUrl($merchantUrl)
-    {
-        $this->threeDPopulator->setMerchantUrl($merchantUrl);
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDescription()
-    {
-        return $this->threeDPopulator->getDescription();
-    }
-
-    /**
-     * @param mixed $description
-     * @return $this
-     */
-    public function setDescription($description)
-    {
-        $this->threeDPopulator->setDescription($description);
-
-        return $this;
     }
 }

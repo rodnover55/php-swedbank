@@ -1,9 +1,11 @@
 <?php
 namespace Rnr\Swedbank\Responses;
 
+use DateTime;
 use Rnr\Swedbank\Enums\Status;
 use Rnr\Swedbank\Exceptions\ResponseStatusFormatter\CommonFormatter;
 use Rnr\Swedbank\Requests\Request;
+use Rnr\Swedbank\Support\MerchantReference;
 use SimpleXMLElement;
 use Exception;
 
@@ -12,12 +14,26 @@ use Exception;
  */
 class Response
 {
+    protected $reference;
+    protected $mode;
+    protected $reason;
+    protected $responseTime;
+    protected $status;
+
+    
     /** @var Request */
     private $request;
 
     public function __construct(SimpleXMLElement $xml, Request $request) {
         $this->validate($xml, $request);
         $this->request = $request;
+
+        $this->reference = MerchantReference::createFromString((string)$xml->merchantreference);
+        $this->mode = (string)$xml->mode;
+        $this->status = (int)$xml->status;
+        $this->reason = (string)$xml->reason;
+        $this->responseTime = new DateTime("@{$xml->time}");
+        
     }
     
     /**
@@ -53,5 +69,45 @@ class Response
             Status::AUTH_ERROR => CommonFormatter::class,
         ];
     }
-    
+
+    /**
+     * @return MerchantReference
+     */
+    public function getReference()
+    {
+        return $this->reference;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMode()
+    {
+        return $this->mode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReason()
+    {
+        return $this->reason;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getResponseTime()
+    {
+        return $this->responseTime;
+    }
+
 }

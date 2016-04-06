@@ -1,25 +1,27 @@
 <?php
 namespace Rnr\Tests\Swedbank;
 
-use Rnr\Swedbank\Requests\CardCaptureRequest;
-use Rnr\Swedbank\Responses\CardCaptureResponse;
+
 use Rnr\Swedbank\Enums\Status;
+use Rnr\Swedbank\Enums\TestPageSet;
+use Rnr\Swedbank\Requests\PurchaseRequest;
 use Rnr\Swedbank\Support\Amount;
 use Rnr\Swedbank\Support\MerchantReference;
-use SimpleXMLElement;
 
-class CardCaptureRequestTest extends RequestsTestCase
+class PurchaseRequestTest extends RequestsTestCase
 {
     public function testSend() {
-        $request = new CardCaptureRequest($this->url, $this->clientId, $this->password);
+        $request = new PurchaseRequest($this->url, $this->clientId, $this->password);
 
         $orderId = uniqid();
         $request
             ->setReturnUrl('http://example.com/return')
             ->setExpiryUrl('https://example.com/expiry')
             ->setAmount(new Amount(150))
-            ->setReference(new MerchantReference($orderId));
-        
+            ->setReference(new MerchantReference($orderId))
+            ->setMerchantUrl('http://example.com')
+            ->setDescription('test');
+
         $response = $request->send();
 
         $this->assertStringStartsWith('https://', $response->getRoute());
@@ -28,15 +30,5 @@ class CardCaptureRequestTest extends RequestsTestCase
         $this->assertEquals("{$orderId}/1", $response->getReference()->getReference());
         $this->assertEquals('ACCEPTED', $response->getReason());
         $this->assertEquals(Status::SUCCESS, $response->getStatus());
-    }
-
-    public function testUrl() {
-        $xml = new SimpleXMLElement(file_get_contents(__DIR__ . '/card-capture-response.xml'));
-        
-        $response = new CardCaptureResponse($xml, new CardCaptureRequest($this->url, $this->clientId, $this->password));
-
-        $route = $response->getRoute();
-        $sessionId = $response->getSessionId();
-        $this->assertEquals("{$route}?HPS_SessionID={$sessionId}", $response->getUrl());
     }
 }
