@@ -32,7 +32,10 @@ class Response
         $this->mode = (string)$xml->mode;
         $this->status = (int)$xml->status;
         $this->reason = (string)$xml->reason;
-        $this->responseTime = new DateTime("@{$xml->time}");
+
+        if (!empty((string)$xml->time)) {
+            $this->responseTime = new DateTime("@{$xml->time}");
+        }
         
     }
     

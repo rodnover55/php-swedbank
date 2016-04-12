@@ -8,6 +8,6 @@ class InformationFormatter extends CommonFormatter
 {
     public function __toString()
     {
-        return (string)$this->xml->information;
+        return "{$this->xml->information}: {$this->xml->reason}";
     }
 }

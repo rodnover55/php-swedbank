@@ -18,5 +18,9 @@ class Status
     const STATUS_187 = 187;
 
     const LUHN_CHECK_FAILS = 281;
+    const UPDATE_CONFIGURATION_FAILED = 551;
     const INVALID_PAYMENT_REFERENCE = 815;
+    
+    const SIMILAR_PASSWORD = 1143;
+    const UNKNOWN_ERROR = 1145;
 }
